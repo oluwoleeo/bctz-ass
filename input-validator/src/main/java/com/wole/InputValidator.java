@@ -1,5 +1,12 @@
 package com.wole;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
@@ -16,8 +23,19 @@ public class InputValidator {
     private String email;
     private String password;
     private String dateOfBirth;
-
     private final List<ValidationException> validationExceptions = new ArrayList<>(4);
+    private final String tokenSecret = "leviackermanMikasaAOT";
+    private final String tokenIssuer = "oluwaremi";
+
+    public InputValidator() {
+    }
+
+    public InputValidator(String username, String email, String password, String dateOfBirth) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.dateOfBirth = dateOfBirth;
+    }
 
     public void readInputs(){
         Scanner input = new Scanner(System.in);
@@ -56,7 +74,7 @@ public class InputValidator {
             validationResult = sb.toString();
         }
         else{
-            validationResult = "Validations passed";
+            validationResult = generateToken();
         }
 
         return validationResult;
@@ -169,5 +187,42 @@ public class InputValidator {
 
     public List<ValidationException> getValidationExceptions() {
         return validationExceptions;
+    }
+
+    public String generateToken(){
+        Algorithm algorithm = Algorithm.HMAC512(tokenSecret);
+
+        return JWT.create()
+                .withIssuer(tokenIssuer)
+                .withClaim("username", username)
+                .withClaim("email", email)
+                .withClaim("dob", dateOfBirth)
+                .withIssuedAt(Instant.now())
+                .withExpiresAt(Instant.now().plusSeconds(3600))
+                .sign(algorithm);
+    }
+
+    public String verifyToken(String toVerify){
+        String verificationResult;
+
+        try{
+            Algorithm algorithm = Algorithm.HMAC512(tokenSecret);
+
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .withIssuer(tokenIssuer)
+                    .withClaim("username", username)
+                    .withClaim("email", email)
+                    .withClaim("dob", dateOfBirth)
+                    .build();
+
+            verifier.verify(toVerify);
+
+            verificationResult = "Verification passed";
+        }
+        catch (JWTVerificationException jwtVerificationException){
+            verificationResult = "Verification failed";
+        }
+
+        return verificationResult;
     }
 }
