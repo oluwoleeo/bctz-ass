@@ -1,0 +1,41 @@
+Here is a sample execution of the program below:
+User 1 wants to eat 3 pancakes
+User 2 wants to eat 3 pancakes
+User 3 wants to eat 5 pancakes
+Non-concurrent approach:
+User 1 ate 0 pancakes
+User 2 ate 0 pancakes
+User 3 ate 0 pancakes
+Start time: 2023-11-10T06:54:04.414
+End time: 2023-11-10T06:54:34.420
+Number of pancakes made: 12
+Number of pancakes taken according to ShopKeeper: 0
+Number of pancakes taken according to Users: 0
+Users' orders met: false
+Number of pancakes wasted: 12
+Number of orders not met: 11
+Concurrent approach:
+User 1 ate 3 pancakes
+User 2 ate 3 pancakes
+User 3 ate 5 pancakes
+Start time: 2023-11-10T06:54:34.433
+End time: 2023-11-10T06:55:04.434
+Number of pancakes made: 12
+Number of pancakes taken according to ShopKeeper: 11
+Number of pancakes taken according to Users: 11
+Users' orders met: true
+Number of pancakes wasted: 1
+Number of orders not met: 0
+
+Process finished with exit code 0
+
+
+My observations:
+- In the non-concurrent approach, the users ate no pancakes despite the fact that the shopkeeper made pancakes.
+All the pancakes made got wasted. Why? This is because the call to make the pancakes i.e. ShopKeeper.makePancakes
+blocks the call to eat them i.e. eatPancakes. ShopKeeper.makePancakes takes all the 30 seconds allotted for the session
+and by the time it completes, there is no time left for eatPancakes to eat the pancakes that has been made.
+
+- In the concurrent approach, the users were able to eat he pancakes they requested for. This is because
+ShopKeeper.makePancakes and eatPancakes are happening concurrently, within the 30-second time slot thereby making it possible
+for the users to eat the pancakes made by the shopkeeper.
