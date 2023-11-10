@@ -13,7 +13,7 @@ public class User {
 
     public void eatPancakes(long startTime){
         while (System.currentTimeMillis() - startTime <= 30000L && pancakesEaten.size() < pancakesToEat){
-            Pancake pancake = ShopKeeper.takePancake();
+            Pancake pancake = ShopKeeper.orderPancake();
 
             if (pancake != null){
                 pancakesEaten.add(pancake);

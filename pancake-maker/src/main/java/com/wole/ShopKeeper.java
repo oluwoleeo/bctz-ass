@@ -9,7 +9,7 @@ public class ShopKeeper {
     private static int pancakesTaken = 0;
     private static final List<Pancake> pancakes = new ArrayList<>(maxPancakesToMake);
 
-    public static synchronized Pancake takePancake(){
+    public static synchronized Pancake orderPancake(){
         if(pancakesTaken < pancakes.size()){
             return pancakes.get(pancakesTaken++);
         }
